@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <virtualType name="AlternativeSourceProcessors">
+        <arguments>
+            <argument name="alternatives" xsi:type="array">
+                <!-- we use the same 'less' name as defined in the Magento_Developer module, and we also need to depend on that module, otherwise it won't be overwritten -->
+                <item name="less" xsi:type="array">
+                    <item name="class" xsi:type="string">Baldwin\LessJsCompiler\Css\PreProcessor\Adapter\Less\Processor</item>
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Baldwin\LessJsCompiler\Css\PreProcessor\Adapter\Less\Processor">
+        <arguments>
+            <argument name="shell" xsi:type="object">Magento\Framework\Shell</argument>
+        </arguments>
+    </type>
+</config>

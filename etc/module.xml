@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Baldwin_LessJsCompiler" setup_version="1.0.0">
+        <!-- we need to depend on Magento_Developer, otherwise our 'less' alternative in di.xml wouldn't overwrite the one from Magento_Developer -->
+        <sequence>
+            <module name="Magento_Developer"/>
+        </sequence>
+    </module>
+</config>
