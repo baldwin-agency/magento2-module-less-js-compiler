@@ -36,7 +36,7 @@ And make sure you add these two files to your version control system.
 Now install this module
 
 ```sh
-composer config repositories.repo-name vcs https://github.com/baldwin-agency/magento2-module-less-js-compiler
+composer config repositories.magento2-module-less-js-compiler vcs https://github.com/baldwin-agency/magento2-module-less-js-compiler
 composer require baldwin/magento2-module-less-js-compiler
 ```
 
