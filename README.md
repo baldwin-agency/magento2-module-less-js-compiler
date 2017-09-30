@@ -49,6 +49,10 @@ bin/magento setup:upgrade
 
 As the last step, in your deploy scripts, make sure you call `npm install --production`. You should execute this somewhere between `composer install` and `bin/magento setup:static-content:deploy`
 
+## Debugging less compilation errors
+
+When your `.less` files have a syntax error or contain something which doesn't allow it to compile properly, please have a look at the `var/log/system.log` file, it will contain the error what causes the problem.
+
 ## Remarks
 
 1. Installing this module will effectively replace the default less compiler from Magento2. If you want to go back to the default less compiler, you need to disable this module or uninstall it.
@@ -56,7 +60,7 @@ As the last step, in your deploy scripts, make sure you call `npm install --prod
 Also: if you use `grunt` or `gulp` in your frontend workflow, you are probably also using less.js version 1.7.5, so using this module makes sure what you see on the server is 100% exactly the same as on your developer machine.
 3. This module expects the less compiler to exist in `{MAGENTO_ROOT_DIR}/node_modules/.bin/lessc`, this is a hard coded path which is being used in the module. The compiler will end up there if you follow the installation steps above, but if for some reason you prefer to install your nodejs modules someplace else, then this module won't work. If somebody actually has this problem and has an idea how to make this path configurable (preferably without getting it from the database), please let me know!
 4. The default less processor in Magento 2 passes an option to the less compiler, which says it should [compress the resulting css file](https://github.com/magento/magento2/blob/6a40b41f6281c7d405cd78029d6becab1d837c87/lib/internal/Magento/Framework/Css/PreProcessor/Adapter/Less/Processor.php#L73). In this module, we have chosen not to do so, as we believe this isn't a task to be executed while compiling less files. It should be done further down the line, like for example during the minification phase. If someone disagrees with this, please let me know, I'm open to discussion about this.
-5. This module was tested against Magento versions 2.0.7 and 2.1.0-rc1
+5. This module was tested against Magento versions 2.0.7, 2.1.0 - 2.1.9 and 2.2.0
 
 ## Benchmarks
 
