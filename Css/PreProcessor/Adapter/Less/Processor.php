@@ -2,6 +2,7 @@
 
 namespace Baldwin\LessJsCompiler\Css\PreProcessor\Adapter\Less;
 
+use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\State;
 use Magento\Framework\Css\PreProcessor\File\Temporary;
 use Magento\Framework\Phrase;
@@ -43,6 +44,11 @@ class Processor implements ContentProcessorInterface
     private $shell;
 
     /**
+     * @var ProductMetadataInterface
+     */
+    private $productMetadata;
+
+    /**
      * Constructor
      *
      * @param LoggerInterface $logger
@@ -50,19 +56,22 @@ class Processor implements ContentProcessorInterface
      * @param Source $assetSource
      * @param Temporary $temporaryFile
      * @param ShellInterface $shell
+     * @param ProductMetadataInterface $productMetadata
      */
     public function __construct(
         LoggerInterface $logger,
         State $appState,
         Source $assetSource,
         Temporary $temporaryFile,
-        ShellInterface $shell
+        ShellInterface $shell,
+        ProductMetadataInterface $productMetadata
     ) {
         $this->logger = $logger;
         $this->appState = $appState;
         $this->assetSource = $assetSource;
         $this->temporaryFile = $temporaryFile;
         $this->shell = $shell;
+        $this->productMetadata = $productMetadata;
     }
 
     /**
@@ -93,6 +102,7 @@ class Processor implements ContentProcessorInterface
             $previousExceptionMessage = $e->getPrevious() !== null ? (PHP_EOL . $e->getPrevious()->getMessage()) : '';
             $errorMessage = $e->getMessage() . $previousExceptionMessage;
 
+            $this->outputErrorMessage($errorMessage, $asset);
             throw new ContentProcessorException(new Phrase($errorMessage));
         }
     }
@@ -143,5 +153,28 @@ class Processor implements ContentProcessorInterface
     protected function getPathToLessCompiler()
     {
         return BP . '/node_modules/.bin/lessc';
+    }
+
+    /**
+     * In Magento 2.0.x and 2.1.x simply throwing a ContentProcessorException didn't output the error to a log file
+     * So for those versions, we still need to output the error message ourselves to the logger
+     * In Magento 2.2.x this was changed and the thrown ContentProcessorException is outputted to a log file, so in those versions it already happens "automatically"
+     * See MAGETWO-54937 - https://github.com/magento/magento2/commit/19ccc61e4208ce570fa040f9ccfdf972da99f7de#diff-e4bf695b706792374f33d6eca9bd9006L345
+     *
+     * @param string $errorMessage
+     * @param File $file
+     */
+    protected function outputErrorMessage($errorMessage, File $file)
+    {
+        $version = $this->productMetadata->getVersion();
+        if (version_compare($version, '2.2.0', '>=') === true) {
+            return;
+        }
+
+        $errorMessage = __('Compilation from source: ')
+            . $file->getSourceFile()
+            . PHP_EOL . $errorMessage;
+
+        $this->logger->critical($errorMessage);
     }
 }
