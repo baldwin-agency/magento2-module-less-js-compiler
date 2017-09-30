@@ -2,15 +2,15 @@
 
 namespace Baldwin\LessJsCompiler\Css\PreProcessor\Adapter\Less;
 
-use Psr\Log\LoggerInterface;
-use Magento\Framework\Phrase;
 use Magento\Framework\App\State;
-use Magento\Framework\ShellInterface;
-use Magento\Framework\View\Asset\File;
-use Magento\Framework\View\Asset\Source;
 use Magento\Framework\Css\PreProcessor\File\Temporary;
+use Magento\Framework\Phrase;
+use Magento\Framework\ShellInterface;
 use Magento\Framework\View\Asset\ContentProcessorException;
 use Magento\Framework\View\Asset\ContentProcessorInterface;
+use Magento\Framework\View\Asset\File;
+use Magento\Framework\View\Asset\Source;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class Processor
@@ -20,7 +20,7 @@ class Processor implements ContentProcessorInterface
     /**
      * @var LoggerInterface
      */
-    protected $logger;
+    private $logger;
 
     /**
      * @var State
@@ -66,14 +66,13 @@ class Processor implements ContentProcessorInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      * @throws ContentProcessorException
      */
     public function processContent(File $asset)
     {
         $path = $asset->getPath();
-        try
-        {
+        try {
             $content = $this->assetSource->getContent($asset);
 
             if (trim($content) === '') {
@@ -85,21 +84,14 @@ class Processor implements ContentProcessorInterface
             $content = $this->compileFile($tmpFilePath);
 
             if (trim($content) === '') {
-                $errorMessage = PHP_EOL . self::ERROR_MESSAGE_PREFIX . PHP_EOL . $path;
-                $this->logger->critical($errorMessage);
-
-                throw new ContentProcessorException(new Phrase($errorMessage));
+                $this->logger->warning('Parsed less file is empty: ' . $path);
+                return '';
+            } else {
+                return $content;
             }
-
-            return $content;
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $previousExceptionMessage = $e->getPrevious() !== null ? (PHP_EOL . $e->getPrevious()->getMessage()) : '';
-            $errorMessage = PHP_EOL . self::ERROR_MESSAGE_PREFIX .
-                            PHP_EOL . $path .
-                            PHP_EOL . $e->getMessage() . $previousExceptionMessage;
-            $this->logger->critical($errorMessage);
+            $errorMessage = $e->getMessage() . $previousExceptionMessage;
 
             throw new ContentProcessorException(new Phrase($errorMessage));
         }
@@ -138,7 +130,7 @@ class Processor implements ContentProcessorInterface
      */
     protected function getCompilerArgsAsString()
     {
-        $args = []; // for example: --no-ie-compat, --no-js, --compress, ...
+        $args = ['--no-color']; // for example: --no-ie-compat, --no-js, --compress, ...
 
         return implode(' ', $args);
     }
