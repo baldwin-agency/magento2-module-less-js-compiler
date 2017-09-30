@@ -83,24 +83,24 @@ rm -R pub/static/* var/cache/* var/view_preprocessed/* var/generation/* var/di/*
 
 ### Results
 
-| magento   | themes | locales | strategy | less.php  | less.js   | machine      | php    | nodejs  |
-|:---------:|:------:|:-------:|:--------:|:---------:|:---------:|:-----------:|:------:|:-------:|
-| 2.0.7     | 5      | 1       | -        | 8m22s     | **3m14s** | older       | 5.5.30 | 0.10.33 |
-| 2.0.7     | 5      | 2       | -        | 16m24s    | **6m11s** | older       | 5.5.30 | 0.10.33 |
-| 2.0.7     | 4      | 3       | -        | 18m44s    | **6m26s** | older       | 5.5.30 | 0.10.33 |
-| 2.0.7     | 5      | 1       | -        | 1m30s     | **1m00s** | newer       | 7.0.7  | 4.2.6   |
-| 2.0.7     | 5      | 2       | -        | 3m06s     | **1m51s** | newer       | 7.0.7  | 4.2.6   |
-| 2.0.7     | 5      | 3       | -        | 4m52s     | **2m52s** | newer       | 7.0.7  | 4.2.6   |
-| 2.1.0-rc1 | 3      | 1       | -        | 4m39s     | **2m01s** | older-local | 5.5.36 | 4.4.3   |
-| 2.1.0-rc1 | 3      | 1       | -        | 4m17s     | **2m02s** | older-local | 5.6.22 | 4.4.3   |
-| 2.1.0-rc1 | 3      | 1       | -        | 2m01s     | **1m26s** | older-local | 7.0.7  | 4.4.3   |
-| 2.1.9     | 3      | 1       | -        | 2m35s     | **1m14s** | newer-local | 7.0.23 | 4.8.4   |
-| 2.1.9     | 3      | 2       | -        | 2m44s     | **1m05s** | newer-local | 7.0.23 | 4.8.4   |
-| 2.2.0     | 3      | 1       | standard | 1m42s     | **0m38s** | newer-local | 7.0.23 | 4.8.4   |
-| 2.2.0     | 3      | 1       | quick*   | 1m42s     | **0m38s** | newer-local | 7.0.23 | 4.8.4   |
-| 2.2.0     | 3      | 1       | compact  | 1m42s     | **0m38s** | newer-local | 7.0.23 | 4.8.4   |
-| 2.2.0     | 3      | 2       | standard | 3m30s     | **1m05s** | newer-local | 7.0.23 | 4.8.4   |
-| 2.2.0     | 3      | 2       | quick*   | 3m29s     | **1m07s** | newer-local | 7.0.23 | 4.8.4   |
-| 2.2.0     | 3      | 2       | compact  | 1m52s     | **0m40s** | newer-local | 7.0.23 | 4.8.4   |
+| magento   | themes | locales | strategy | machine     | php    | nodejs  | less.php  | less.js   |
+|:---------:|:------:|:-------:|:--------:|:-----------:|:------:|:-------:|:---------:|:---------:|
+| 2.0.7     | 5      | 1       | -        | older       | 5.5.30 | 0.10.33 | 8m22s     | **3m14s** |
+| 2.0.7     | 5      | 2       | -        | older       | 5.5.30 | 0.10.33 | 16m24s    | **6m11s** |
+| 2.0.7     | 4      | 3       | -        | older       | 5.5.30 | 0.10.33 | 18m44s    | **6m26s** |
+| 2.0.7     | 5      | 1       | -        | newer       | 7.0.7  | 4.2.6   | 1m30s     | **1m00s** |
+| 2.0.7     | 5      | 2       | -        | newer       | 7.0.7  | 4.2.6   | 3m06s     | **1m51s** |
+| 2.0.7     | 5      | 3       | -        | newer       | 7.0.7  | 4.2.6   | 4m52s     | **2m52s** |
+| 2.1.0-rc1 | 3      | 1       | -        | older-local | 5.5.36 | 4.4.3   | 4m39s     | **2m01s** |
+| 2.1.0-rc1 | 3      | 1       | -        | older-local | 5.6.22 | 4.4.3   | 4m17s     | **2m02s** |
+| 2.1.0-rc1 | 3      | 1       | -        | older-local | 7.0.7  | 4.4.3   | 2m01s     | **1m26s** |
+| 2.1.9     | 3      | 1       | -        | newer-local | 7.0.23 | 4.8.4   | 2m35s     | **1m14s** |
+| 2.1.9     | 3      | 2       | -        | newer-local | 7.0.23 | 4.8.4   | 2m44s     | **1m05s** |
+| 2.2.0     | 3      | 1       | standard | newer-local | 7.0.23 | 4.8.4   | 1m42s     | **0m38s** |
+| 2.2.0     | 3      | 1       | quick*   | newer-local | 7.0.23 | 4.8.4   | 1m42s     | **0m38s** |
+| 2.2.0     | 3      | 1       | compact  | newer-local | 7.0.23 | 4.8.4   | 1m42s     | **0m38s** |
+| 2.2.0     | 3      | 2       | standard | newer-local | 7.0.23 | 4.8.4   | 3m30s     | **1m05s** |
+| 2.2.0     | 3      | 2       | quick*   | newer-local | 7.0.23 | 4.8.4   | 3m29s     | **1m07s** |
+| 2.2.0     | 3      | 2       | compact  | newer-local | 7.0.23 | 4.8.4   | 1m52s     | **0m40s** |
 
 _*_ The [quick strategy](http://devdocs.magento.com/guides/v2.2/config-guide/cli/config-cli-subcommands-static-deploy-strategies.html) deployment is [currently bugged in Magento 2.2.0](https://github.com/magento/magento2/issues/10674) and behaves the same as the standard strategy
