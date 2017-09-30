@@ -64,19 +64,26 @@ Also: if you use `grunt` or `gulp` in your frontend workflow, you are probably a
 
 ## Benchmarks
 
+### Intro
+
 This is by no means very professionaly conducted, but here are some tests performed on some Magento 2 shops we are working on.  
+We disabled parallelism to make the comparison between different Magento versions easier to understand.  
 We only measured the duration of the `bin/magento setup:static-content:deploy` command, xdebug is disabled as it causes a massive slowdown, and before every run we make sure all caches are clean, by running:
 
 ```sh
 rm -R pub/static/* var/cache/* var/view_preprocessed/* var/generation/* var/di/* var/page_cache/* generated/*
 ```
 
-The _older_ server is a server which is in constant use and has older software installed on it.  
-The _newer_ server is a new server which currently receives no traffic and has al the sparkly new software versions installed (at the time of writing).  
-The _local_ machine is a 2011 Macbook Pro (no vagrant or docker, just native software using Macports)  
-The _newer-local_ machine is a 2017 Macbook Pro (native software using Homebrew)  
+### Machines
 
-| magento   | themes | locales | strategy | less.php  | less.js   | server      | php    | nodejs  |
+- The _older_ server is a server which is in constant use and has older software installed on it.  
+- The _newer_ server is a new server which currently receives no traffic and has al the sparkly new software versions installed (at the time of writing).  
+- The _older-local_ machine is a 2011 Macbook Pro (HDD has been upgraded to SSD, no vagrant or docker, just native software using Macports)  
+- The _newer-local_ machine is a 2017 Macbook Pro (native software using Homebrew)  
+
+### Results
+
+| magento   | themes | locales | strategy | less.php  | less.js   | machine      | php    | nodejs  |
 |:---------:|:------:|:-------:|:--------:|:---------:|:---------:|:-----------:|:------:|:-------:|
 | 2.0.7     | 5      | 1       | -        | 8m22s     | **3m14s** | older       | 5.5.30 | 0.10.33 |
 | 2.0.7     | 5      | 2       | -        | 16m24s    | **6m11s** | older       | 5.5.30 | 0.10.33 |
@@ -84,9 +91,11 @@ The _newer-local_ machine is a 2017 Macbook Pro (native software using Homebrew)
 | 2.0.7     | 5      | 1       | -        | 1m30s     | **1m00s** | newer       | 7.0.7  | 4.2.6   |
 | 2.0.7     | 5      | 2       | -        | 3m06s     | **1m51s** | newer       | 7.0.7  | 4.2.6   |
 | 2.0.7     | 5      | 3       | -        | 4m52s     | **2m52s** | newer       | 7.0.7  | 4.2.6   |
-| 2.1.0-rc1 | 3      | 1       | -        | 4m39s     | **2m01s** | local       | 5.5.36 | 4.4.3   |
-| 2.1.0-rc1 | 3      | 1       | -        | 4m17s     | **2m02s** | local       | 5.6.22 | 4.4.3   |
-| 2.1.0-rc1 | 3      | 1       | -        | 2m01s     | **1m26s** | local       | 7.0.7  | 4.4.3   |
+| 2.1.0-rc1 | 3      | 1       | -        | 4m39s     | **2m01s** | older-local | 5.5.36 | 4.4.3   |
+| 2.1.0-rc1 | 3      | 1       | -        | 4m17s     | **2m02s** | older-local | 5.6.22 | 4.4.3   |
+| 2.1.0-rc1 | 3      | 1       | -        | 2m01s     | **1m26s** | older-local | 7.0.7  | 4.4.3   |
+| 2.1.9     | 3      | 1       | -        | 2m35s     | **1m14s** | newer-local | 7.0.23 | 4.8.4   |
+| 2.1.9     | 3      | 2       | -        | 2m44s     | **1m05s** | newer-local | 7.0.23 | 4.8.4   |
 | 2.2.0     | 3      | 1       | standard | 1m42s     | **0m38s** | newer-local | 7.0.23 | 4.8.4   |
 | 2.2.0     | 3      | 1       | quick*   | 1m42s     | **0m38s** | newer-local | 7.0.23 | 4.8.4   |
 | 2.2.0     | 3      | 1       | compact  | 1m42s     | **0m38s** | newer-local | 7.0.23 | 4.8.4   |
