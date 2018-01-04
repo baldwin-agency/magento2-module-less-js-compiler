@@ -115,18 +115,20 @@ class Processor implements ContentProcessorInterface
      */
     protected function compileFile($filePath)
     {
-        $cmdArgs = $this->getCompilerArgsAsString();
-        $cmd = "%s $cmdArgs %s";
+        $nodeCmdArgs = $this->getNodeArgsAsString();
+        $lessCmdArgs = $this->getCompilerArgsAsString();
+        $cmd = "%s $nodeCmdArgs %s $lessCmdArgs %s";
 
         // to log or not to log, that's the question
         // also, it would be better to use the logger in the Shell class,
         // since that one will contain the exact correct command, and not this sprintf version
         // $this->logger->debug('Less compilation command: `'
-        //     . sprintf($cmd, $this->getPathToLessCompiler(), $filePath)
+        //     . sprintf($cmd, $this->getPathToNodeBinary(), $this->getPathToLessCompiler(), $filePath)
         //     . '`');
 
         return $this->shell->execute($cmd,
             [
+                $this->getPathToNodeBinary(),
                 $this->getPathToLessCompiler(),
                 $filePath,
             ]
@@ -153,6 +155,29 @@ class Processor implements ContentProcessorInterface
     protected function getPathToLessCompiler()
     {
         return BP . '/node_modules/.bin/lessc';
+    }
+
+    /**
+     * Get all arguments which will be used in the cli call with the nodejs binary
+     *
+     * @return string
+     */
+    protected function getNodeArgsAsString()
+    {
+        $args = ['--no-deprecation']; // squelch warnings about deprecated modules being used
+
+        return implode(' ', $args);
+    }
+
+    /**
+     * Get the path to the nodejs binary
+     *
+     * @return string
+     */
+    protected function getPathToNodeBinary()
+    {
+        // we assume it's globally available
+        return 'node';
     }
 
     /**
