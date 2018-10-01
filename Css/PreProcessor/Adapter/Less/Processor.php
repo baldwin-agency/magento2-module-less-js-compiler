@@ -112,6 +112,7 @@ class Processor implements ContentProcessorInterface
      *
      * @param string $filePath
      * @return string
+     * @throws \Exception
      */
     protected function compileFile($filePath)
     {
@@ -158,14 +159,15 @@ class Processor implements ContentProcessorInterface
         $lesscLocations = [
             BP . '/node_modules/.bin/lessc',
             BP . '/node_modules/less/bin/lessc',
-
         ];
+
         foreach ($lesscLocations as $lesscLocation) {
             if (file_exists($lesscLocation)) {
                 return $lesscLocation;
             }
         }
-        throw new \Exception('Less compiler not found (is node module "less" installed?)');
+
+        throw new \Exception('Less compiler not found (make sure the node package "less" is installed)');
     }
 
     /**
