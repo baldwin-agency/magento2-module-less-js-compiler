@@ -151,10 +151,21 @@ class Processor implements ContentProcessorInterface
      * Get the path to the lessc nodejs compiler
      *
      * @return string
+     * @throws \Exception
      */
     protected function getPathToLessCompiler()
     {
-        return BP . '/node_modules/.bin/lessc';
+        $lesscLocations = [
+            BP . '/node_modules/.bin/lessc',
+            BP . '/node_modules/less/bin/lessc',
+
+        ];
+        foreach ($lesscLocations as $lesscLocation) {
+            if (file_exists($lesscLocation)) {
+                return $lesscLocation;
+            }
+        }
+        throw new \Exception('Less compiler not found (is node module "less" installed?)');
     }
 
     /**
