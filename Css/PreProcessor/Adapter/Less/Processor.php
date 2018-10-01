@@ -5,6 +5,7 @@ namespace Baldwin\LessJsCompiler\Css\PreProcessor\Adapter\Less;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\State;
 use Magento\Framework\Css\PreProcessor\File\Temporary;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Framework\ShellInterface;
 use Magento\Framework\View\Asset\ContentProcessorException;
@@ -167,7 +168,7 @@ class Processor implements ContentProcessorInterface
             }
         }
 
-        throw new \Exception('Less compiler not found (make sure the node package "less" is installed)');
+        throw new \Exception('Less compiler not found, make sure the node package "less" is installed');
     }
 
     /**
@@ -186,11 +187,20 @@ class Processor implements ContentProcessorInterface
      * Get the path to the nodejs binary
      *
      * @return string
+     * @throws \Exception
      */
     protected function getPathToNodeBinary()
     {
-        // we assume it's globally available
-        return 'node';
+        $nodeJsBinary = 'node';
+
+        try {
+            $cmd = 'command -v %s';
+            $nodeJsBinary = $this->shell->execute($cmd, [$nodeJsBinary]);
+        } catch (LocalizedException $ex) {
+            throw new \Exception("Node.js binary '$nodeJsBinary' not found, make sure it exists in the PATH of the user executing this command");
+        }
+
+        return $nodeJsBinary;
     }
 
     /**
