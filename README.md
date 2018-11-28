@@ -6,6 +6,9 @@ This module was built out of frustration about the slow deployments of static as
 This module provides a solution by using the [original less.js compiler](https://github.com/less/less.js) which was written in javascript and is executed through node.js  
 We have [benchmarked](#benchmarks) the difference between the less.php and less.js compilers, and the less.js compiler is somewhere between 1.5 and 3 times as fast as the less.php compiler, although it depends on your PHP version. If you run PHP 5.x the performance increase will be much higher, PHP 7.x is actually quite fast by itself, but the nodejs version still beats it.
 
+**Update**: Since Magento 2.3.0, it seems like the performance differences between less.php and less.js are not very big anymore. I have the suspicion this might have something to do with newer [releases of the less.php](https://github.com/oyejorge/less.php/releases) library. Which got released somewhere around the period when Magento 2.2.3 & 2.1.12 were released. So it's possible that the performance difference for Magento 2.2.x and 2.1.x might also be less significant then how it's displayed [below](#benchmarks) if you upgrade the less.php library to the latest version (v1.7.0.14 at the time of writing).  
+This is a bit of speculation, since unfortunately I didn't keep track of the version of the less.php library which I've used in the benchmarks, so I'm not sure about this statement.
+
 ## Requirements
 
 You'll need at least Magento 2.0.7. We didn't bother with testing this module on older versions.  
@@ -79,7 +82,7 @@ rm -R pub/static/* var/cache/* var/view_preprocessed/* var/generation/* var/di/*
 - The _older_ server is a server which is in constant use and has older software installed on it.  
 - The _newer_ server is a new server which currently receives no traffic and has al the sparkly new software versions installed (at the time of writing).  
 - The _older-local_ machine is a 2011 Macbook Pro (HDD has been upgraded to SSD, no vagrant or docker, just native software using Macports)  
-- The _newer-local_ machine is a 2017 Macbook Pro (native software using Homebrew)  
+- The _newer-local_ machine is a 2017 Macbook Pro (native software using Homebrew or Macports)
 
 ### Results
 
@@ -102,5 +105,9 @@ rm -R pub/static/* var/cache/* var/view_preprocessed/* var/generation/* var/di/*
 | 2.2.0     | 3      | 2       | standard | newer-local | 7.0.23 | 4.8.4   | 3m30s     | **1m05s** |
 | 2.2.0     | 3      | 2       | quick*   | newer-local | 7.0.23 | 4.8.4   | 3m29s     | **1m07s** |
 | 2.2.0     | 3      | 2       | compact  | newer-local | 7.0.23 | 4.8.4   | 1m52s     | **0m40s** |
+| 2.3.0     | 3      | 2       | standard | newer-local | 7.2.12 | 8.12.0  | 1m35s     | **1m26s** |
+| 2.3.0     | 3      | 2       | quick*   | newer-local | 7.2.12 | 8.12.0  | 1m35s     | **1m28s** |
+| 2.3.0     | 3      | 2       | compact  | newer-local | 7.2.12 | 8.12.0  | 0m43s     | **0m42s** |
 
-_*_ The [quick strategy](http://devdocs.magento.com/guides/v2.2/config-guide/cli/config-cli-subcommands-static-deploy-strategies.html) deployment is [currently bugged in Magento 2.2.0](https://github.com/magento/magento2/issues/10674) and behaves the same as the standard strategy
+
+_*_ The [quick strategy](http://devdocs.magento.com/guides/v2.2/config-guide/cli/config-cli-subcommands-static-deploy-strategies.html) deployment is [currently bugged in Magento 2.2.x and 2.3.x](https://github.com/magento/magento2/issues/10674) and behaves the same as the standard strategy
