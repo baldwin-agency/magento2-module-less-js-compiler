@@ -130,7 +130,8 @@ class Processor implements ContentProcessorInterface
      *
      * @param string $filePath
      * @return string
-     * @throws LocalizedException
+     * @throws NotFoundException if the nodejs or less compiler binaries can't be found
+     * @throws LocalizedException if the shell command returns non-zero exit code
      */
     protected function compileFile($filePath)
     {
