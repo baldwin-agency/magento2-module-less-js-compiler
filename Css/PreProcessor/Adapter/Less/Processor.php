@@ -7,6 +7,7 @@ use Magento\Framework\App\State;
 use Magento\Framework\Css\PreProcessor\File\Temporary;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\Filesystem\DirectoryList;
 use Magento\Framework\Filesystem\Io\File as Filesystem;
 use Magento\Framework\Phrase;
 use Magento\Framework\ShellInterface;
@@ -57,6 +58,11 @@ class Processor implements ContentProcessorInterface
     private $filesystem;
 
     /**
+     * @var DirectoryList
+     */
+    private $directoryList;
+
+    /**
      * Constructor
      *
      * @param LoggerInterface $logger
@@ -73,7 +79,8 @@ class Processor implements ContentProcessorInterface
         Temporary $temporaryFile,
         ShellInterface $shell,
         ProductMetadataInterface $productMetadata,
-        Filesystem $filesystem
+        Filesystem $filesystem,
+        DirectoryList $directoryList
     ) {
         $this->logger = $logger;
         $this->appState = $appState;
@@ -82,6 +89,7 @@ class Processor implements ContentProcessorInterface
         $this->shell = $shell;
         $this->productMetadata = $productMetadata;
         $this->filesystem = $filesystem;
+        $this->directoryList = $directoryList;
     }
 
     /**
@@ -92,7 +100,7 @@ class Processor implements ContentProcessorInterface
     {
         $path = $asset->getPath();
         try {
-            $content = $this->assetSource->getContent($asset);
+            $content = (string) $this->assetSource->getContent($asset);
 
             if (trim($content) === '') {
                 return '';
@@ -167,9 +175,11 @@ class Processor implements ContentProcessorInterface
      */
     protected function getPathToLessCompiler()
     {
+        $rootDir = $this->directoryList->getRoot();
+
         $lesscLocations = [
-            BP . '/node_modules/.bin/lessc',
-            BP . '/node_modules/less/bin/lessc',
+            $rootDir . '/node_modules/.bin/lessc',
+            $rootDir . '/node_modules/less/bin/lessc',
         ];
 
         foreach ($lesscLocations as $lesscLocation) {
