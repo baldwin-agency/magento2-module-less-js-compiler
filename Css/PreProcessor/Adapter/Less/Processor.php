@@ -6,11 +6,13 @@ use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\State;
 use Magento\Framework\Css\PreProcessor\File\Temporary;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\Filesystem\Io\File as Filesystem;
 use Magento\Framework\Phrase;
 use Magento\Framework\ShellInterface;
 use Magento\Framework\View\Asset\ContentProcessorException;
 use Magento\Framework\View\Asset\ContentProcessorInterface;
-use Magento\Framework\View\Asset\File;
+use Magento\Framework\View\Asset\File as AssetFile;
 use Magento\Framework\View\Asset\Source;
 use Psr\Log\LoggerInterface;
 
@@ -50,6 +52,11 @@ class Processor implements ContentProcessorInterface
     private $productMetadata;
 
     /**
+     * @var Filesystem
+     */
+    private $filesystem;
+
+    /**
      * Constructor
      *
      * @param LoggerInterface $logger
@@ -65,7 +72,8 @@ class Processor implements ContentProcessorInterface
         Source $assetSource,
         Temporary $temporaryFile,
         ShellInterface $shell,
-        ProductMetadataInterface $productMetadata
+        ProductMetadataInterface $productMetadata,
+        Filesystem $filesystem
     ) {
         $this->logger = $logger;
         $this->appState = $appState;
@@ -73,13 +81,14 @@ class Processor implements ContentProcessorInterface
         $this->temporaryFile = $temporaryFile;
         $this->shell = $shell;
         $this->productMetadata = $productMetadata;
+        $this->filesystem = $filesystem;
     }
 
     /**
      * @inheritdoc
      * @throws ContentProcessorException
      */
-    public function processContent(File $asset)
+    public function processContent(AssetFile $asset)
     {
         $path = $asset->getPath();
         try {
@@ -113,7 +122,7 @@ class Processor implements ContentProcessorInterface
      *
      * @param string $filePath
      * @return string
-     * @throws \Exception
+     * @throws LocalizedException
      */
     protected function compileFile($filePath)
     {
@@ -128,7 +137,8 @@ class Processor implements ContentProcessorInterface
         //     . sprintf($cmd, $this->getPathToNodeBinary(), $this->getPathToLessCompiler(), $filePath)
         //     . '`');
 
-        return $this->shell->execute($cmd,
+        return $this->shell->execute(
+            $cmd,
             [
                 $this->getPathToNodeBinary(),
                 $this->getPathToLessCompiler(),
@@ -153,7 +163,7 @@ class Processor implements ContentProcessorInterface
      * Get the path to the lessc nodejs compiler
      *
      * @return string
-     * @throws \Exception
+     * @throws NotFoundException
      */
     protected function getPathToLessCompiler()
     {
@@ -163,12 +173,12 @@ class Processor implements ContentProcessorInterface
         ];
 
         foreach ($lesscLocations as $lesscLocation) {
-            if (file_exists($lesscLocation)) {
+            if ($this->filesystem->fileExists($lesscLocation)) {
                 return $lesscLocation;
             }
         }
 
-        throw new \Exception('Less compiler not found, make sure the node package "less" is installed');
+        throw new NotFoundException(__('Less compiler not found, make sure the node package "less" is installed'));
     }
 
     /**
@@ -187,7 +197,7 @@ class Processor implements ContentProcessorInterface
      * Get the path to the nodejs binary
      *
      * @return string
-     * @throws \Exception
+     * @throws NotFoundException
      */
     protected function getPathToNodeBinary()
     {
@@ -197,7 +207,10 @@ class Processor implements ContentProcessorInterface
             $cmd = 'command -v %s';
             $nodeJsBinary = $this->shell->execute($cmd, [$nodeJsBinary]);
         } catch (LocalizedException $ex) {
-            throw new \Exception("Node.js binary '$nodeJsBinary' not found, make sure it exists in the PATH of the user executing this command");
+            throw new NotFoundException(__(
+                "Node.js binary '$nodeJsBinary' not found, " .
+                "make sure it exists in the PATH of the user executing this command"
+            ));
         }
 
         return $nodeJsBinary;
@@ -206,13 +219,14 @@ class Processor implements ContentProcessorInterface
     /**
      * In Magento 2.0.x and 2.1.x simply throwing a ContentProcessorException didn't output the error to a log file
      * So for those versions, we still need to output the error message ourselves to the logger
-     * In Magento 2.2.x this was changed and the thrown ContentProcessorException is outputted to a log file, so in those versions it already happens "automatically"
+     * In Magento 2.2.x this was changed and the thrown ContentProcessorException is outputted to a log file,
+     * so in those versions it already happens "automatically"
      * See MAGETWO-54937 - https://github.com/magento/magento2/commit/19ccc61e4208ce570fa040f9ccfdf972da99f7de#diff-e4bf695b706792374f33d6eca9bd9006L345
      *
      * @param string $errorMessage
-     * @param File $file
+     * @param AssetFile $file
      */
-    protected function outputErrorMessage($errorMessage, File $file)
+    protected function outputErrorMessage($errorMessage, AssetFile $file)
     {
         $version = $this->productMetadata->getVersion();
         if (version_compare($version, '2.2.0', '>=') === true) {
