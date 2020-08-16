@@ -9,6 +9,8 @@ We have [benchmarked](#benchmarks) the difference between the less.php and less.
 **Update**: Since Magento 2.3.0, it seems like the performance differences between less.php and less.js are not very big anymore. I have the suspicion this might have something to do with newer [releases of the less.php](https://github.com/oyejorge/less.php/releases) library. Which got released somewhere around the period when Magento 2.2.3 & 2.1.12 were released. So it's possible that the performance difference for Magento 2.2.x and 2.1.x might also be less significant then how it's displayed [below](#benchmarks) if you upgrade the less.php library to the latest version (v1.7.0.14 at the time of writing).  
 This is a bit of speculation, since unfortunately I didn't keep track of the version of the less.php library which I've used in the benchmarks, so I'm not sure about this statement.
 
+Since Magento 2.4.0 (or newer PHP versions?), the performance differences seems to have changed in favor of less.php.  But you might still want to use this module so that the outputted css is the same between your local development environment and a production environment.
+
 ## Requirements
 
 You'll need at least Magento 2.0.7. We didn't bother with testing this module on older versions.  
@@ -107,6 +109,9 @@ rm -R pub/static/* var/cache/* var/view_preprocessed/* var/generation/* var/di/*
 | 2.3.0     | 3      | 2       | standard | newer-local | 7.2.12 | 8.12.0  | 1m35s     | **1m26s** |
 | 2.3.0     | 3      | 2       | quick*   | newer-local | 7.2.12 | 8.12.0  | 1m35s     | **1m28s** |
 | 2.3.0     | 3      | 2       | compact  | newer-local | 7.2.12 | 8.12.0  | 0m43s     | **0m42s** |
+| 2.4.0     | 3      | 2       | standard | newer-local | 7.4.4  | 8.17.0  | **0m49s** | 0m58s     |
+| 2.4.0     | 3      | 2       | quick*   | newer-local | 7.4.4  | 8.17.0  | **0m49s** | 1m03s     |
+| 2.4.0     | 3      | 2       | compact  | newer-local | 7.4.4  | 8.17.0  | **0m31s** | 0m37s     |
 
 
-_*_ The [quick strategy](http://devdocs.magento.com/guides/v2.2/config-guide/cli/config-cli-subcommands-static-deploy-strategies.html) deployment is [currently bugged in Magento 2.2.x and 2.3.x](https://github.com/magento/magento2/issues/10674) and behaves the same as the standard strategy
+_*_ The [quick strategy](http://devdocs.magento.com/guides/v2.4/config-guide/cli/config-cli-subcommands-static-deploy-strategies.html) deployment is [currently bugged in Magento 2.2.x and 2.3.x and 2.4.x](https://github.com/magento/magento2/issues/10674) and behaves the same as the standard strategy
