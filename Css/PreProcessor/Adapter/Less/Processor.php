@@ -3,7 +3,6 @@
 namespace Baldwin\LessJsCompiler\Css\PreProcessor\Adapter\Less;
 
 use Magento\Framework\App\ProductMetadataInterface;
-use Magento\Framework\App\State;
 use Magento\Framework\Css\PreProcessor\File\Temporary;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
@@ -17,64 +16,18 @@ use Magento\Framework\View\Asset\File as AssetFile;
 use Magento\Framework\View\Asset\Source;
 use Psr\Log\LoggerInterface;
 
-/**
- * Class Processor
- */
 class Processor implements ContentProcessorInterface
 {
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
-
-    /**
-     * @var State
-     */
-    private $appState;
-
-    /**
-     * @var Source
-     */
     private $assetSource;
-
-    /**
-     * @var Temporary
-     */
     private $temporaryFile;
-
-    /**
-     * @var ShellInterface
-     */
     private $shell;
-
-    /**
-     * @var ProductMetadataInterface
-     */
     private $productMetadata;
-
-    /**
-     * @var Filesystem
-     */
     private $filesystem;
-
-    /**
-     * @var DirectoryList
-     */
     private $directoryList;
 
-    /**
-     * Constructor
-     *
-     * @param LoggerInterface $logger
-     * @param State $appState
-     * @param Source $assetSource
-     * @param Temporary $temporaryFile
-     * @param ShellInterface $shell
-     * @param ProductMetadataInterface $productMetadata
-     */
     public function __construct(
         LoggerInterface $logger,
-        State $appState,
         Source $assetSource,
         Temporary $temporaryFile,
         ShellInterface $shell,
@@ -83,7 +36,6 @@ class Processor implements ContentProcessorInterface
         DirectoryList $directoryList
     ) {
         $this->logger = $logger;
-        $this->appState = $appState;
         $this->assetSource = $assetSource;
         $this->temporaryFile = $temporaryFile;
         $this->shell = $shell;
@@ -93,7 +45,6 @@ class Processor implements ContentProcessorInterface
     }
 
     /**
-     * @inheritdoc
      * @throws ContentProcessorException
      */
     public function processContent(AssetFile $asset)
@@ -112,6 +63,7 @@ class Processor implements ContentProcessorInterface
 
             if (trim($content) === '') {
                 $this->logger->warning('Parsed less file is empty: ' . $path);
+
                 return '';
             } else {
                 return $content;
@@ -129,7 +81,9 @@ class Processor implements ContentProcessorInterface
      * Compiles less file and returns output as a string
      *
      * @param string $filePath
+     *
      * @return string
+     *
      * @throws NotFoundException if the nodejs or less compiler binaries can't be found
      * @throws LocalizedException if the shell command returns non-zero exit code
      */
@@ -172,6 +126,7 @@ class Processor implements ContentProcessorInterface
      * Get the path to the lessc nodejs compiler
      *
      * @return string
+     *
      * @throws NotFoundException
      */
     protected function getPathToLessCompiler()
@@ -208,6 +163,7 @@ class Processor implements ContentProcessorInterface
      * Get the path to the nodejs binary
      *
      * @return string
+     *
      * @throws NotFoundException
      */
     protected function getPathToNodeBinary()
@@ -220,7 +176,7 @@ class Processor implements ContentProcessorInterface
         } catch (LocalizedException $ex) {
             throw new NotFoundException(__(
                 "Node.js binary '$nodeJsBinary' not found, " .
-                "make sure it exists in the PATH of the user executing this command"
+                'make sure it exists in the PATH of the user executing this command'
             ));
         }
 
@@ -235,7 +191,8 @@ class Processor implements ContentProcessorInterface
      * See MAGETWO-54937 - https://github.com/magento/magento2/commit/19ccc61e4208ce570fa040f9ccfdf972da99f7de#diff-e4bf695b706792374f33d6eca9bd9006L345
      *
      * @param string $errorMessage
-     * @param AssetFile $file
+     *
+     * @return void
      */
     protected function outputErrorMessage($errorMessage, AssetFile $file)
     {
