@@ -25,7 +25,7 @@
         "bitexpert/phpstan-magento": "^0.19.0",
         "ergebnis/composer-normalize": "^2.20",
         "friendsofphp/php-cs-fixer": "^3.4",
-        "magento/magento-coding-standard": "^6.0",
+        "magento/magento-coding-standard": ">=6",
         "phpcompatibility/php-compatibility": "^9.3",
         "phpstan/extension-installer": "^1.1",
         "phpstan/phpstan": "^1.4",
@@ -48,6 +48,7 @@
     "config": {
         "allow-plugins": {
             "ergebnis/composer-normalize": true,
+            "magento/composer-dependency-version-audit-plugin": true,
             "phpstan/extension-installer": true
         },
         "sort-packages": true

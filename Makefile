@@ -11,7 +11,7 @@ check: checkstyle checkquality
 .PHONY: checkstyle
 checkstyle:
 	vendor/bin/php-cs-fixer fix --dry-run --diff --stop-on-violation --allow-risky=yes
-	vendor/bin/phpcs -s --standard=Magento2 --ignore=./vendor/ .
+	vendor/bin/phpcs -s --standard=Magento2 --exclude=Magento2.Commenting.ClassPropertyPHPDocFormatting,Magento2.Annotation.MethodAnnotationStructure,Magento2.Annotation.MethodArguments --ignore=./vendor/ .
 	vendor/bin/phpcs -s --standard=PHPCompatibility --runtime-set testVersion 5.5- --ignore=./vendor/ .
 	vendor/bin/composer normalize --dry-run
 
