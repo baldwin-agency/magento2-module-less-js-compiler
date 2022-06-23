@@ -22,7 +22,7 @@
         "magento/module-developer": "^100.0.5"
     },
     "require-dev": {
-        "bitexpert/phpstan-magento": "^0.19.0",
+        "bitexpert/phpstan-magento": "^0.23.0",
         "ergebnis/composer-normalize": "^2.20",
         "friendsofphp/php-cs-fixer": "^3.4",
         "magento/magento-coding-standard": ">=6",
