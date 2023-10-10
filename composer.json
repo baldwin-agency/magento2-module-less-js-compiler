@@ -41,9 +41,9 @@
     },
     "config": {
         "allow-plugins": {
+            "bamarni/composer-bin-plugin": true,
             "ergebnis/composer-normalize": true,
-            "magento/composer-dependency-version-audit-plugin": true,
-            "bamarni/composer-bin-plugin": true
+            "magento/composer-dependency-version-audit-plugin": true
         },
         "sort-packages": true
     },
