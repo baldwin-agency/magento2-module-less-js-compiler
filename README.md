@@ -93,7 +93,7 @@ But if you want to enable throwing an exception during the compilation process, 
 
 ## Investigating less compilation errors
 
-When your `.less` files have a syntax error or contain something which doesn't allow it to compile properly, please have a look at the `var/log/system.log` file, it will contain the some output about what caused the problem.
+When your `.less` files have a syntax error or contain something which doesn't allow it to compile properly, please have a look at the `var/log/system.log` file, it will contain some output about what caused the problem.
 
 ## Remarks
 
