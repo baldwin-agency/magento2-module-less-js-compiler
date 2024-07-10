@@ -94,19 +94,22 @@ class Processor implements ContentProcessorInterface
      */
     protected function compileFile($filePath)
     {
-        $process = new Process([
-            $this->getPathToNodeBinary(),
-            ...$this->getNodeArgsAsArray(),
-            $this->getPathToLessCompiler(),
-            ...$this->getCompilerArgsAsArray(),
-            $filePath,
-        ]);
+        $nodeCmdArgs = $this->getNodeArgsAsArray();
+        $lessCmdArgs = $this->getCompilerArgsAsArray();
 
+        $command = [];
+        $command[] = $this->getPathToNodeBinary();
+        $command = array_merge($command, $nodeCmdArgs);
+        $command[] = $this->getPathToLessCompiler();
+        $command = array_merge($command, $lessCmdArgs);
+        $command[] = $filePath;
+
+        $process = new Process($command);
         $process->run();
 
         if (!$process->isSuccessful()) {
             $error = sprintf(
-                'The command "%s" failed.'."\n\nExit Code: %s(%s)\n\nWorking directory: %s",
+                'The command "%s" failed.' . "\n\nExit Code: %s(%s)\n\nWorking directory: %s",
                 $process->getCommandLine(),
                 $process->getExitCode(),
                 $process->getExitCodeText(),
