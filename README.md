@@ -76,9 +76,24 @@ If you want to override the default arguments, you can do this by modifying your
     ]
 ```
 
-## Debugging less compilation errors
+You can also enable throwing an exception when the less compilation runs into warnings/errors, by default this is disabled and you should find the problems logged in your `var/log/system.log` file.
+But if you want to enable throwing an exception during the compilation process, you can by configuring this in your `app/etc/config.php` or `app/etc/env.php` file:
 
-When your `.less` files have a syntax error or contain something which doesn't allow it to compile properly, please have a look at the `var/log/system.log` file, it will contain the error what causes the problem.
+```php
+    'system' => [
+        'default' => [
+            'dev' => [
+                'less_js_compiler' => [
+                    'throw_on_error' => true,
+                ]
+            ]
+        ]
+    ]
+```
+
+## Investigating less compilation errors
+
+When your `.less` files have a syntax error or contain something which doesn't allow it to compile properly, please have a look at the `var/log/system.log` file, it will contain some output about what caused the problem.
 
 ## Remarks
 

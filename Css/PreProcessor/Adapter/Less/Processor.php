@@ -16,6 +16,9 @@ use Magento\Framework\View\Asset\ContentProcessorInterface;
 use Magento\Framework\View\Asset\File as AssetFile;
 use Magento\Framework\View\Asset\Source;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ProcessBuilder;
 
 class Processor implements ContentProcessorInterface
 {
@@ -58,17 +61,19 @@ class Processor implements ContentProcessorInterface
             $content = (string) $this->assetSource->getContent($asset);
 
             if (trim($content) === '') {
-                return '';
+                throw new ContentProcessorException(
+                    new Phrase('Compilation from source: LESS file is empty: ' . $path)
+                );
             }
 
             $tmpFilePath = $this->temporaryFile->createFile($path, $content);
 
-            $content = $this->compileFile($tmpFilePath);
+            $content = $this->compileFile($tmpFilePath, $path);
 
             if (trim($content) === '') {
-                $this->logger->warning('Parsed less file is empty: ' . $path);
-
-                return '';
+                throw new ContentProcessorException(
+                    new Phrase('Compilation from source: CSS is empty from LESS file: ' . $path)
+                );
             } else {
                 return $content;
             }
@@ -85,37 +90,50 @@ class Processor implements ContentProcessorInterface
      * Compiles less file and returns output as a string
      *
      * @param string $filePath
+     * @param string $assetPath
      *
      * @return string
      *
      * @throws NotFoundException if the nodejs or less compiler binaries can't be found
      * @throws LocalizedException if the shell command returns non-zero exit code
      */
-    protected function compileFile($filePath)
+    protected function compileFile($filePath, $assetPath)
     {
         $nodeCmdArgs = $this->getNodeArgsAsArray();
         $lessCmdArgs = $this->getCompilerArgsAsArray();
 
-        $cmd = '%s ' . str_repeat(' %s', count($nodeCmdArgs)) . ' %s' . str_repeat(' %s', count($lessCmdArgs)) . ' %s';
-        $arguments = [];
-        $arguments[] = $this->getPathToNodeBinary();
-        $arguments = array_merge($arguments, $nodeCmdArgs);
-        $arguments[] = $this->getPathToLessCompiler();
-        $arguments = array_merge($arguments, $lessCmdArgs);
-        $arguments[] = $filePath;
+        $command = [];
+        $command[] = $this->getPathToNodeBinary();
+        $command = array_merge($command, $nodeCmdArgs);
+        $command[] = $this->getPathToLessCompiler();
+        $command = array_merge($command, $lessCmdArgs);
+        $command[] = $filePath;
 
-        // to log or not to log, that's the question
-        // also, it would be better to use the logger in the Shell class,
-        // since that one will contain the exact correct command, and not this sprintf version
-        // $logArguments = array_map('escapeshellarg', $arguments);
-        // $this->logger->debug('Less compilation command: `'
-        //     . sprintf($cmd, ...$logArguments)
-        //     . '`');
+        $process = $this->getProcess($command);
 
-        return $this->shell->execute(
-            $cmd,
-            $arguments
-        );
+        try {
+            $process->mustRun();
+        } catch (ProcessFailedException $ex) {
+            throw new ContentProcessorException(
+                new Phrase('LESS compilation process failed with: %1', [$ex->getMessage()])
+            );
+        }
+
+        $errorOutput = $process->getErrorOutput();
+
+        if ($errorOutput !== '') {
+            $errorMessage = new Phrase('LESS compilation ran into some problems: %1', [$errorOutput]);
+            if ($this->isThrowOnErrorEnabled()) {
+                throw new ContentProcessorException($errorMessage);
+            } else {
+                $this->logger->error($errorMessage, [
+                    'asset' => $assetPath,
+                    'file'  => $filePath,
+                ]);
+            }
+        }
+
+        return $process->getOutput();
     }
 
     /**
@@ -257,5 +275,39 @@ class Processor implements ContentProcessorInterface
         }
 
         return null;
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return bool
+     */
+    private function getConfigValueFromPathAsBool($path)
+    {
+        return filter_var($this->scopeConfig->getValue($path), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
+     * @param array<string> $commandArgs
+     *
+     * @return Process
+     */
+    private function getProcess(array $commandArgs)
+    {
+        // We can't use Process class in symfony/process 2.x because it takes a string and not an array
+        // therefore we use ProcessBuilder, which exists only in symfony/process 2.x and was removed from 3.x and higher
+        if (class_exists(ProcessBuilder::class)) {
+            return (new ProcessBuilder($commandArgs))->getProcess();
+        }
+
+        return new Process($commandArgs);
+    }
+
+    /**
+     * @return bool
+     */
+    private function isThrowOnErrorEnabled()
+    {
+        return $this->getConfigValueFromPathAsBool('dev/less_js_compiler/throw_on_error');
     }
 }
