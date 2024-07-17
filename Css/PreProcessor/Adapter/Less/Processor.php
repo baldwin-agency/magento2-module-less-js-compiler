@@ -278,6 +278,16 @@ class Processor implements ContentProcessorInterface
     }
 
     /**
+     * @param string $path
+     *
+     * @return bool
+     */
+    private function getConfigValueFromPathAsBool($path)
+    {
+        return filter_var($this->scopeConfig->getValue($path), FILTER_VALIDATE_BOOLEAN);
+    }
+
+    /**
      * @param array<string> $commandArgs
      *
      * @return Process
@@ -298,8 +308,6 @@ class Processor implements ContentProcessorInterface
      */
     private function isThrowOnErrorEnabled()
     {
-        $throwOnError = $this->getConfigValueFromPath('dev/less_js_compiler/throw_on_error');
-
-        return $throwOnError === '1';
+        return $this->getConfigValueFromPathAsBool('dev/less_js_compiler/throw_on_error');
     }
 }

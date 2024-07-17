@@ -84,7 +84,7 @@ But if you want to enable throwing an exception during the compilation process, 
         'default' => [
             'dev' => [
                 'less_js_compiler' => [
-                    'throw_on_error' => '1',
+                    'throw_on_error' => true,
                 ]
             ]
         ]
