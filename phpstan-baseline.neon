@@ -1,0 +1,7 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Method Baldwin\\LessJsCompiler\\Css\\PreProcessor\\Adapter\\Less\\Processor\:\:getProcess\(\) should return Symfony\\Component\\Process\\Process but returns mixed\.$#'
+			identifier: return.type
+			count: 1
+			path: Css/PreProcessor/Adapter/Less/Processor.php
