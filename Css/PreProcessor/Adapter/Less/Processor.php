@@ -295,7 +295,7 @@ class Processor implements ContentProcessorInterface
     private function getProcess(array $commandArgs)
     {
         // We can't use Process class in symfony/process 2.x because it takes a string and not an array
-        // therefore we use ProcessBuilder, which exists only in symfony/process 2.x and was removed from 3.x and higher
+        // therefore we use ProcessBuilder, which exists only in symfony/process >= 2.1 < 4.0
         if (class_exists(ProcessBuilder::class)) {
             return (new ProcessBuilder($commandArgs))->getProcess();
         }
