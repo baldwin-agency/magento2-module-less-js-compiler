@@ -229,8 +229,8 @@ class Processor implements ContentProcessorInterface
             $nodeJsBinary = $this->shell->execute($cmd, [$nodeJsBinary]);
         } catch (LocalizedException $ex) {
             throw new NotFoundException(__(
-                "Node.js binary '$nodeJsBinary' not found, " .
-                'make sure it exists in the PATH of the user executing this command'
+                "Node.js binary '$nodeJsBinary' not found, "
+                . 'make sure it exists in the PATH of the user executing this command'
             ));
         }
 
